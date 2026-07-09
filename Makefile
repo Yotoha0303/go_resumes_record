@@ -8,7 +8,7 @@ DB_USER ?= root
 DB_NAME ?= go_resumes_record
 MIGRATION_DSN ?= $(DB_USER):$(MYSQL_PASSWORD)@tcp($(DB_HOST):$(DB_PORT))/$(DB_NAME)?parseTime=true
 
-.PHONY:help migrate-validate migrate-status migrate-up run
+.PHONY:help migrate-validate migrate-status migrate-up tidy run
 
 help:
 	@echo Target: make target
@@ -18,6 +18,7 @@ help:
 	@echo migrate-validate  validate mysql migrate
 	@echo migrate-status    query mysql migrate status
 	@echo migrate-up		migrate create mysql 
+	@echo tidy 	  go mod tidy auto add dependency
 
 
 migrate-validate:
@@ -28,6 +29,9 @@ migrate-status:
 
 migrate-up:
 	@$(GOOSE) -dir "$(MIGRATIONS_DIR)" mysql "$(MIGRATION_DSN)" up
+
+tidy:
+	go mod tidy
 
 run:
 	go run ./cmd
