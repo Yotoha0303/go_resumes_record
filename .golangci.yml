@@ -1,0 +1,64 @@
+run:
+  timeout: 5m
+
+linters:
+  enable:
+    - errcheck        # 未处理的 error
+    - govet           # 可疑代码（printf 格式、struct 对齐等）
+    - staticcheck     # 综合静态分析
+    - unused          # 未使用的变量、函数、类型
+    - ineffassign     # 无效赋值
+    - gosec           # 安全问题检测
+    - gocritic        # 代码风格和潜在 bug
+    - gofmt           # 格式化检查
+    - misspell        # 拼写检查
+
+  disable:
+    - wrapcheck       # 强制 error wrapping，MVP 阶段过严
+    - exhaustruct     # 强制所有 struct 字段赋值，过于严格
+    - varnamelen      # 强制变量名长度，过于严格
+    - ireturn         # 禁止返回 interface，过于严格
+    - depguard        # 依赖包白名单，暂不需要
+    - nlreturn        # 强制函数间空行，过于严格
+    - wsl             # 强制空行风格，过于严格
+
+linters-settings:
+  errcheck:
+    check-type-assertions: false
+    check-blank: false
+
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+    disabled-checks:
+      - hugeParam       # 值传递大 struct，暂不强制
+      - rangeValCopy    # range 中复制值，暂不强制
+
+  gosec:
+    excludes:
+      - G104  # 未处理的 error，已有 errcheck 覆盖
+      - G304  # 文件路径拼接，内部工具暂不限制
+
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment  # struct 字段对齐优化，暂不强制
+
+issues:
+  # 不显示自动生成文件的 lint 错误
+  exclude-files:
+    - ".*_gen\\.go$"
+    - ".*mock.*\\.go$"
+
+  max-issues-per-linter: 50
+  max-same-issues: 5
+
+severity:
+  default-severity: warning
+  rules:
+    - linters:
+        - errcheck
+        - gosec
+      severity: error

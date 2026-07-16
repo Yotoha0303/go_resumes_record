@@ -1,0 +1,7 @@
+mysql:
+  user: root
+  host: "mysql"
+  port: 3306
+  database: go_resumes_record
+server:
+  port: 8083

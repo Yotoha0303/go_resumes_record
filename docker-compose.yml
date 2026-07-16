@@ -1,0 +1,46 @@
+services:
+  # ---------------------------------------------------------------------------
+  # MySQL
+  # ---------------------------------------------------------------------------
+  mysql:
+    image: mysql:8.0
+    container_name: go-resumes-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-root0303}
+      MYSQL_DATABASE: go_resumes_record
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_general_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_PASSWORD:-root0303}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ---------------------------------------------------------------------------
+  # Go Application
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: go-resumes-app
+    restart: unless-stopped
+    ports:
+      - "8083:8083"
+    environment:
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-root0303}
+    volumes:
+      # 挂载 Docker 专用配置，MySQL host 指向容器名
+      - ./config.docker.yml:/app/config.yml:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:

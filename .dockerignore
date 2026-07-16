@@ -1,0 +1,28 @@
+# Git
+.git
+.gitignore
+
+# 环境变量（敏感信息）
+.env
+.env.example
+
+# 文档
+docs/
+*.md
+!go.sum
+
+# CI/CD
+.github/
+
+# IDE
+.vscode/
+.idea/
+
+# Docker（避免递归）
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# 临时文件
+tmp/
+*.tmp
